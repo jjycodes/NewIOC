@@ -9,12 +9,12 @@ namespace Business
 {
     public class CyclesBusinessLogic : ICyclesBusinessLogic
     {
-        private IUsersController _usersController;
-
         public CyclesBusinessLogic(IUsersController usersController)
         {
-            _usersController = usersController;
+            UsersController = usersController;
         }
+
+        public IUsersController UsersController { get; set; }
 
         public void AddNewCycle(string cycleName)
         {

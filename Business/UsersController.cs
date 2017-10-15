@@ -9,17 +9,18 @@ namespace Business
 {
     public class UsersController : IUsersController
     {
-        private ICalculator _calculator;
-        private IEmailService _emailService;
+        public ICalculator Calculator { get; set; }
+        public IEmailService EmailService { get; set; }
 
         public UsersController(ICalculator calculator, IEmailService emailService)
         {
-            _calculator = calculator;
-            _emailService = emailService;
+            Calculator = calculator;
+            EmailService = emailService;
         }
         public int AddUser(string name)
         {
             throw new NotImplementedException();
         }
+        
     }
 }

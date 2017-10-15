@@ -42,5 +42,53 @@ namespace Tests
             var calculator = container.Resolve<ICalculator>();
             Assert.NotSame(container.Resolve<ICalculator>(), calculator);
         }
+
+        [Fact]
+        public void GivenContainer_WhenIRegisterNestedType_ButMissingDependenciesRegistration_ThenShouldThrowException()
+        {
+            IContainer container = new Container();
+            container.Register<IUsersController, UsersController>();
+            
+            Assert.Throws<Exception>(() => container.Resolve<IUsersController>());
+        }
+
+        [Fact]
+        public void GivenContainer_WhenIRegisterNestedType_ThenShouldResolveObjectAndDependencies()
+        {
+            IContainer container = new Container();
+            container.Register<IEmailService, EmailService>();
+            container.Register<ICalculator, ICalculator>();
+            container.Register<IUsersController, UsersController>();
+
+            var usersController = container.Resolve<IUsersController>();
+            Assert.NotNull(usersController);
+            Assert.NotNull(usersController.EmailService);
+            Assert.NotNull(usersController.Calculator);
+
+            Assert.IsType<UsersController>(usersController);
+            Assert.IsType<EmailService>(usersController.EmailService);
+            Assert.IsType<Calculator>(usersController.Calculator);
+        }
+
+        [Fact]
+        public void GivenContainer_WhenIRegisterThreeLevelNestedType_ThenShouldResolveObjectAndDependencies()
+        {
+            IContainer container = new Container();
+            container.Register<IEmailService, EmailService>();
+            container.Register<ICalculator, ICalculator>();
+            container.Register<IUsersController, UsersController>();
+            container.Register<ICyclesBusinessLogic, ICyclesBusinessLogic>();
+
+            var cyclesBL = container.Resolve<ICyclesBusinessLogic>();
+            Assert.NotNull(cyclesBL);
+            Assert.NotNull(cyclesBL.UsersController);
+            Assert.NotNull(cyclesBL.UsersController.EmailService);
+            Assert.NotNull(cyclesBL.UsersController.Calculator);
+
+            Assert.IsType<CyclesBusinessLogic>(cyclesBL);
+            Assert.IsType<UsersController>(cyclesBL.UsersController);
+            Assert.IsType<EmailService>(cyclesBL.UsersController.EmailService);
+            Assert.IsType<Calculator>(cyclesBL.UsersController.Calculator);
+        }
     }
 }

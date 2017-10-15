@@ -8,6 +8,8 @@ namespace Business.Interfaces
 {
     public interface ICyclesBusinessLogic
     {
+        IUsersController UsersController {get; set;}
+
         void AddNewCycle(string cycleName);
 
         void AddCycleUsers();
