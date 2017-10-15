@@ -9,14 +9,19 @@ namespace NewIOC
 {
     public class Container : IContainer
     {
+        private readonly IList<Component> _registry = new List<Component>();
         public void Register<DeclaredType, ConcreteType>()
         {
-            throw new NotImplementedException();
+            _registry.Add(new Component(typeof(DeclaredType), typeof(ConcreteType), LifeCycleType.Transient));
         }
 
         public DeclaredType Resolve<DeclaredType>()
         {
-            throw new NotImplementedException();
+            var component = _registry.FirstOrDefault(o => o.DeclaredType == typeof(DeclaredType));
+            if (component != null)
+                return (DeclaredType) component.Instance;
+
+            throw new Exception($"Type {typeof(DeclaredType)} not found");
         }
     }
 }

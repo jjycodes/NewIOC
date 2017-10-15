@@ -32,5 +32,15 @@ namespace Tests
             Assert.NotNull(calculator);
             Assert.IsType<Calculator>(calculator);
         }
+
+        [Fact]
+        public void GivenContainer_WhenIRegisterType_ThenShouldResolveTransientByDefault()
+        {
+            IContainer container = new Container();
+            container.Register<ICalculator, Calculator>();
+
+            var calculator = container.Resolve<ICalculator>();
+            Assert.NotSame(container.Resolve<ICalculator>(), calculator);
+        }
     }
 }
