@@ -44,6 +44,16 @@ namespace Tests
         }
 
         [Fact]
+        public void GivenContainer_WhenIRegisterTypeAsSingleton_ThenShouldResolveToTheSameInstance()
+        {
+            IContainer container = new Container();
+            container.Register<ICalculator, Calculator>(LifeCycleType.Singleton);
+
+            var calculator = container.Resolve<ICalculator>();
+            Assert.Same(container.Resolve<ICalculator>(), calculator);
+        }
+
+        [Fact]
         public void GivenContainer_WhenIRegisterNestedType_ButMissingDependenciesRegistration_ThenShouldThrowException()
         {
             IContainer container = new Container();
