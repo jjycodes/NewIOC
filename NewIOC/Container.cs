@@ -23,23 +23,72 @@ namespace NewIOC
         public DeclaredType Resolve<DeclaredType>()
         {
             var component = _registry.FirstOrDefault(o => o.DeclaredType == typeof(DeclaredType));
+            
             if (component != null)
             {
-                if (component.Instance != null)
-                {
-                    return (DeclaredType) component.Instance;
-                }
-
-                component.Instance = CreateInstance(component.ConcreteType);
-                return (DeclaredType) component.Instance;
+                return (DeclaredType) GetRegisteredComponentInstance(component);
             }
 
-            throw new Exception($"Type {typeof(DeclaredType)} not found");
+            throw new Exception($"Type {typeof(DeclaredType).FullName} not found");
+        }
+
+        private object Resolve(Type typeKey)
+        {
+            var component = _registry.FirstOrDefault(o => o.DeclaredType == typeKey);
+
+            if (component != null)
+            {
+                return GetRegisteredComponentInstance(component);
+            }
+
+            throw new Exception($"Type {typeKey.FullName} not found");
+        }
+
+        private object GetRegisteredComponentInstance(Component component)
+        {
+            if (component.LifeCycle == LifeCycleType.Singleton)
+            {
+                if (component.Instance == null)
+                    component.Instance = CreateInstance(component.ConcreteType);
+
+                return component.Instance;
+            }
+
+            //Always return new instance for Transient types
+            return CreateInstance(component.ConcreteType);
         }
 
         private object CreateInstance(Type concreteType)
         {
-            return Activator.CreateInstance(concreteType);
+            var args = new List<object>();
+
+            var constructor = concreteType.GetConstructors().FirstOrDefault();
+            var parameterList = constructor.GetParameters();
+
+            if (constructor == null || !parameterList.Any())
+            {
+                return Activator.CreateInstance(concreteType);
+            }
+            
+            //Recursive appraoch to instantiate a nested type that depends on other registered types
+            foreach (var parameter in parameterList)
+            {
+                //if (paramType.IsInterface)
+                var resolvedParameterObject = Resolve(parameter.ParameterType);
+                args.Add(resolvedParameterObject);
+                //else
+                //Trust that constructor arguments are interfaces only.
+                //Why should they use DI when constructors take concrete types?
+                //DI entails following a convention over configuration approach.
+
+
+                //Catch here for possible circular object graph of dependencies
+            }
+
+
+            var instance = Activator.CreateInstance(concreteType, args.ToArray());
+            Console.WriteLine($"Type : {instance.GetType()}");
+            return instance;
         }
     }
 }

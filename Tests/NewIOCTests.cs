@@ -34,6 +34,19 @@ namespace Tests
         }
 
         [Fact]
+        public void GivenContainer_WhenIRegisterTypeWithNoConstructor_ThenShouldResolveObject()
+        {
+            IContainer container = new Container();
+
+            container.Register<IEmailService, EmailService>();
+
+            var emailService = container.Resolve<IEmailService>();
+
+            Assert.NotNull(emailService);
+            Assert.IsType<EmailService>(emailService);
+        }
+
+        [Fact]
         public void GivenContainer_WhenIRegisterType_ThenShouldResolveTransientByDefault()
         {
             IContainer container = new Container();
@@ -67,7 +80,7 @@ namespace Tests
         {
             IContainer container = new Container();
             container.Register<IEmailService, EmailService>();
-            container.Register<ICalculator, ICalculator>();
+            container.Register<ICalculator, Calculator>();
             container.Register<IUsersController, UsersController>();
 
             var usersController = container.Resolve<IUsersController>();
@@ -85,9 +98,9 @@ namespace Tests
         {
             IContainer container = new Container();
             container.Register<IEmailService, EmailService>();
-            container.Register<ICalculator, ICalculator>();
+            container.Register<ICalculator, Calculator>();
             container.Register<IUsersController, UsersController>();
-            container.Register<ICyclesBusinessLogic, ICyclesBusinessLogic>();
+            container.Register<ICyclesBusinessLogic, CyclesBusinessLogic>();
 
             var cyclesBL = container.Resolve<ICyclesBusinessLogic>();
             Assert.NotNull(cyclesBL);
