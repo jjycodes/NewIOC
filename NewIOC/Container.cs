@@ -4,12 +4,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using NewIOC.Models;
 
 namespace NewIOC
 {
     public class Container : IContainer
     {
-        private readonly IList<Component> _registry = new List<Component>();
+        private readonly IDictionary<Type, Component> _registry = new Dictionary<Type, Component>();
         public void Register<DeclaredType, ConcreteType>()
         {
             Register<DeclaredType, ConcreteType>(LifeCycleType.Transient);
@@ -17,31 +18,30 @@ namespace NewIOC
 
         public void Register<DeclaredType, ConcreteType>(LifeCycleType lifeCycleType)
         {
-            _registry.Add(new Component(typeof(DeclaredType), typeof(ConcreteType), lifeCycleType));
+            var component = new Component(typeof(DeclaredType), typeof(ConcreteType), lifeCycleType);
+
+            if (!_registry.ContainsKey(typeof(DeclaredType)))
+            {
+                _registry.Add(typeof(DeclaredType), component);
+            }
+            else
+            {
+                //Override any existing component for now
+                _registry[typeof(DeclaredType)] = component;
+            }
         }
 
         public DeclaredType Resolve<DeclaredType>()
         {
-            var component = _registry.FirstOrDefault(o => o.DeclaredType == typeof(DeclaredType));
-            
-            if (component != null)
-            {
-                return (DeclaredType) GetRegisteredComponentInstance(component);
-            }
-
-            throw new Exception($"Type {typeof(DeclaredType).FullName} not found");
+            return (DeclaredType) Resolve(typeof(DeclaredType));
         }
 
         private object Resolve(Type typeKey)
         {
-            var component = _registry.FirstOrDefault(o => o.DeclaredType == typeKey);
+            if (_registry.ContainsKey(typeKey))
+                return GetRegisteredComponentInstance(_registry[typeKey]);
 
-            if (component != null)
-            {
-                return GetRegisteredComponentInstance(component);
-            }
-
-            throw new Exception($"Type {typeKey.FullName} not found");
+            throw new ImplementationNotFoundException($"Cannot find implementation for {typeKey.FullName}");
         }
 
         private object GetRegisteredComponentInstance(Component component)
@@ -65,7 +65,7 @@ namespace NewIOC
             var constructor = concreteType.GetConstructors().FirstOrDefault();
             var parameterList = constructor.GetParameters();
 
-            if (constructor == null || !parameterList.Any())
+            if (!parameterList.Any())
             {
                 return Activator.CreateInstance(concreteType);
             }

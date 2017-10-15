@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Business;
 using Business.Interfaces;
 using NewIOC;
+using NewIOC.Models;
 using Xunit;
 
 namespace Tests
@@ -17,7 +18,7 @@ namespace Tests
         {
             IContainer container = new Container();
             
-            Assert.Throws<Exception>(() => container.Resolve<IEmailService>());
+            Assert.Throws<ImplementationNotFoundException>(() => container.Resolve<IEmailService>());
         }
 
         [Fact]
@@ -72,7 +73,7 @@ namespace Tests
             IContainer container = new Container();
             container.Register<IUsersController, UsersController>();
             
-            Assert.Throws<Exception>(() => container.Resolve<IUsersController>());
+            Assert.Throws<ImplementationNotFoundException>(() => container.Resolve<IUsersController>());
         }
 
         [Fact]
