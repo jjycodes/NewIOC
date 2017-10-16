@@ -10,9 +10,8 @@ namespace NewIOC
 {
     public class Container : IContainer
     {
-        private ILifeCycleService _lifeCycleService;
-        private readonly IDictionary<Type, Component> _registry = new Dictionary<Type, Component>();
-
+        private readonly ILifeCycleService _lifeCycleService;
+        
         public Container()
         {
             _lifeCycleService = new TransientLifecycleService();
