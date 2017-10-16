@@ -42,7 +42,11 @@
   <ItemGroup>
     <Compile Include="Container.cs" />
     <Compile Include="IContainer.cs" />
+    <Compile Include="Models\ILifeCycleService.cs" />
     <Compile Include="Models\ImplementationNotFoundException.cs" />
+    <Compile Include="Models\SingletonLifeCycleService.cs" />
+    <Compile Include="Models\ThreadStaticLifecCycleService.cs" />
+    <Compile Include="Models\TransientLifecycleService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Component.cs" />
   </ItemGroup>
