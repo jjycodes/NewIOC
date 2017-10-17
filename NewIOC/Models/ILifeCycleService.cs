@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +10,8 @@ namespace NewIOC.Models
     public abstract class ILifeCycleService
     {
         protected readonly IDictionary<Type, Component> _registry = new Dictionary<Type, Component>();
+        protected readonly IDictionary<Type, ConstructorInfo> _constructorCache = new Dictionary<Type, ConstructorInfo>();
+
         public virtual void RegisterComponent(Type typeKey, Component component)
         {
             if (!_registry.ContainsKey(typeKey))
@@ -33,8 +36,18 @@ namespace NewIOC.Models
         protected virtual object CreateInstance(Type concreteType)
         {
             var args = new List<object>();
+            ConstructorInfo constructor;
 
-            var constructor = concreteType.GetConstructors().FirstOrDefault();
+            if (_constructorCache.ContainsKey(concreteType))
+            {
+                constructor = _constructorCache[concreteType];
+            }
+            else
+            {
+                constructor = concreteType.GetConstructors().FirstOrDefault();
+                _constructorCache[concreteType] = constructor;
+            }
+
             var parameterList = constructor.GetParameters();
 
             if (!parameterList.Any())
