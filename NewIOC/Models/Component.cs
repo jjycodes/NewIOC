@@ -25,11 +25,12 @@ namespace NewIOC
 
         public LifeCycleType LifeCycle { get; set; }
 
-        public Component(Type declaredType, Type concreteType, LifeCycleType lifeCycle)
+        public Component(Type declaredType, Type concreteType)
         {
+            //LifeCycleType lifeCycle
             DeclaredType = declaredType;
             ConcreteType = concreteType;
-            LifeCycle = lifeCycle;
+            //LifeCycle = lifeCycle;
         }
     }
 

@@ -61,7 +61,7 @@ namespace Tests
         public void GivenContainer_WhenIRegisterTypeAsSingleton_ThenShouldResolveToTheSameInstance()
         {
             IContainer container = new Container(new SingletonLifeCycleService());
-            container.Register<ICalculator, Calculator>(LifeCycleType.Singleton);
+            container.Register<ICalculator, Calculator>();
 
             var calculator = container.Resolve<ICalculator>();
             Assert.Same(container.Resolve<ICalculator>(), calculator);

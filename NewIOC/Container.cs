@@ -21,17 +21,11 @@ namespace NewIOC
         {
             _lifeCycleService = lifeCycleService;
         }
-
-        public void Register<DeclaredType, ConcreteType>()
+        
+        public void Register<DeclaredType, ConcreteType>() where ConcreteType : DeclaredType
         {
-            Register<DeclaredType, ConcreteType>(LifeCycleType.Transient);
-        }
-
-        public void Register<DeclaredType, ConcreteType>(LifeCycleType lifeCycleType)
-        {
-            var component = new Component(typeof(DeclaredType), typeof(ConcreteType), lifeCycleType);
+            var component = new Component(typeof(DeclaredType), typeof(ConcreteType));
             _lifeCycleService.RegisterComponent(typeof(DeclaredType), component);
-            
         }
 
         public DeclaredType Resolve<DeclaredType>()

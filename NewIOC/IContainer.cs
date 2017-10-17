@@ -8,8 +8,7 @@ namespace NewIOC
 {
     public interface IContainer
     {
-        void Register<DeclaredType, ConcreteType>();
-        void Register<DeclaredType, ConcreteType>(LifeCycleType lifeCycleType);
+        void Register<DeclaredType, ConcreteType>() where ConcreteType : DeclaredType;
         DeclaredType Resolve<DeclaredType>();
     }
 }
